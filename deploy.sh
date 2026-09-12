@@ -2,7 +2,7 @@
 # Hostinger sunucusunda cron tarafından çalıştırılır: yeni sürüm varsa repoyu indirip public_html'e kopyalar.
 # Ortam değişkeni TS_CONTACT_TO (cron komutunda verilir) api/config.php alıcı adresini belirler.
 set -e
-BASE="$HOME/domains/temizstok.com"; DOC="$BASE/public_html"
+BASE="$(cd "$(dirname "$0")" && pwd)"; DOC="$BASE/public_html"
 mkdir -p "$DOC"; LOG="$DOC/deploy-log.txt"
 [ -f "$LOG" ] && tail -n 200 "$LOG" > "$LOG.tmp" && mv "$LOG.tmp" "$LOG"
 exec > >(tee -a "$LOG") 2>&1
