@@ -3,6 +3,10 @@
 # Ortam değişkeni TS_CONTACT_TO (cron komutunda verilir) api/config.php alıcı adresini belirler.
 set -e
 BASE="$HOME/domains/temizstok.com"; DOC="$BASE/public_html"
+mkdir -p "$DOC"; LOG="$DOC/deploy-log.txt"
+[ -f "$LOG" ] && tail -n 200 "$LOG" > "$LOG.tmp" && mv "$LOG.tmp" "$LOG"
+exec > >(tee -a "$LOG") 2>&1
+echo "--- $(date) ---"
 ZIP_URL="https://codeload.github.com/bilalcelik111903-source/temizstok-site/zip/refs/heads/main"
 VER_URL="https://raw.githubusercontent.com/bilalcelik111903-source/temizstok-site/main/VERSION"
 cur=$(cat "$BASE/.deployed_version" 2>/dev/null || echo none)
@@ -16,7 +20,7 @@ src=$(find "$tmp" -mindepth 1 -maxdepth 1 -type d | head -1)
 rm -f "$src/deploy.sh" "$src/README.md" "$DOC/default.php"
 mkdir -p "$DOC"
 if command -v rsync >/dev/null 2>&1; then
-  rsync -a --delete --exclude 'api/config.php' --exclude '.well-known' --exclude '.htaccess.bak' "$src"/ "$DOC"/
+  rsync -a --delete --exclude 'api/config.php' --exclude '.well-known' --exclude 'deploy-log.txt' --exclude 'cron-ran.txt' "$src"/ "$DOC"/
 else
   cp -a "$src"/. "$DOC"/
 fi
